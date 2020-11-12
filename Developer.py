@@ -20,6 +20,11 @@ class Developer:
         self.start()
 
     def start(self): # defining a function/method with class reference
+       colour_background ="#54f54f"
+        colour_1="#55f55f"
+        colour_2="#42f578"
+        colour_3="#42f59c"
+        colour_4="#42f5b6"
         # Create a MainFrame
         Main_Frame = Frame(self.window)
         Main_Frame.pack(fill=BOTH,expand=1)
@@ -34,54 +39,53 @@ class Developer:
         canvas.bind('<Configure>',lambda e: canvas.config(scrollregion=canvas.bbox('all')))
         scroll_bar.config(command=canvas.yview)
         # create another frame inside canvas
-        In_Frame=Frame(canvas,bg="#54f54f")
+        In_Frame=Frame(canvas,bg=colour_background)
         # add new frame to window
         canvas.create_window((0,0),window=In_Frame,anchor="n")
-        back = Button(In_Frame,text="<=",bg="#54f54f",bd=0,font=("Airel",12,"bold"),fg="white",command=self.window.destroy)
+        back = Button(In_Frame,text="<=",bg=colour_background,bd=0,font=("Airel",12,"bold"),fg="white",command=self.window.destroy)
         back.place(x=0,y=0)
-        Dev_Label= Label(In_Frame,text= "App Developers",fg="Green",bg="#54f54f",font=("Times New Roman",20,"bold"),anchor="center")
+        Dev_Label= Label(In_Frame,text= "App Developers",fg="Green",bg=colour_background,font=("Times New Roman",20,"bold"),anchor="center")
         Dev_Label.pack(pady=20)
         # hl = canvas.create_line(10,10,50,10,width=3)
         line = Label(In_Frame,text="----------------------(  )---------------------",bg="#54f54f",bd=0,font=("Times New Roman",16,"bold"),fg="red")
         line.pack()
-        frame1 = Frame(In_Frame,bg="#55f55f",width=360,height=300)#frame widget let u put items together as in container,
+        frame1 = Frame(In_Frame,bg=colour_1,width=360,height=300)#frame widget let u put items together as in container,
         frame1.pack(padx=10,pady=20)
         # frame1.place(relx=0.05,rely=0.1)#(x=150,y=30)
 
-        frame2 = Frame(In_Frame, bg="#42f578", width=360,height=300)  # frame widget let u put items together as in container,
+        frame2 = Frame(In_Frame, bg=colour_2, width=360,height=300)  # frame widget let u put items together as in container,
         # frame2.place(relx=0.25, rely=0.1)  # (x=150,y=30)
         frame2.pack(padx=10,pady=20)
-        frame3 = Frame(In_Frame, bg="#42f59c", width=360,height=300)  # frame widget let u put items together as in container
+        frame3 = Frame(In_Frame, bg=colour_3, width=360,height=300)  # frame widget let u put items together as in container
         # frame3.place(relx=0.5, rely=0.1)  # (x=150,y=30)
         frame3.pack(padx=10,pady=20)
-        frame4 = Frame(In_Frame,bg="#42f5b6",width=360,height=300)
+        frame4 = Frame(In_Frame,bg=colour_4,width=360,height=300)
         frame4.pack(padx=10,pady=20)
 
         # Name: Gaurav Bhardwaj    Email: bhardwajg2411@gmail.com   call @:6283913449
-        name1 = Label(frame1,text="Gaurav Bhardwaj",font = ("Times New Roman",12,"bold"))
-        Call1 = Label(frame1, text="Call @: 6283913449", font=("Times New Roman", 12, "bold"))
+        name1 = Label(frame1,text="Gaurav Bhardwaj",bg=colour_1,font = ("Times New Roman",12,"bold"))
+        Call1 = Label(frame1, text="Call @: 6283913449",bg=colour_1, font=("Times New Roman", 12, "bold"))
         name1.place(relx= 0.12,rely=0.08) # X: along length of screen(200),Y: along width of screen(50)
-        email1 = Label(frame1, text="Email: bhardwajg2411@gmail.com",font = ("Times New Roman",12,"bold"))
+        email1 = Label(frame1, text="Email: bhardwajg2411@gmail.com",bg=colour_1,font = ("Times New Roman",12,"bold"))
         email1.place(relx=0.12,rely=0.24)#x=200,y=100
         Call1.place(relx=0.12,rely=0.4)
 
-        name2 = Label(frame2, text="Girish Bhardwaj", font=("Times New Roman", 12, "bold"))
-        Call2 = Label(frame2, text="Call @: 6283913449", font=("Times New Roman", 12, "bold"))
-        # Name: Gaurav Bhardwaj    Email: bhardwajg2411@gmail.com   call @:6283913449
+        name2 = Label(frame2, text="Girish Kumar",bg=colour_2, font=("Times New Roman", 12, "bold"))
+        Call2 = Label(frame2, text="Call @: 6283913449",bg=colour_2, font=("Times New Roman", 12, "bold"))
         name2.place(relx=0.12, rely=0.08)  # X: along length of screen(200),Y: along width of screen(50)
-        email2 = Label(frame2, text="Email: bhardwajg2411@gmail.com", font=("Times New Roman", 12, "bold"))
+        email2 = Label(frame2, text="Email: bhardwajg2411@gmail.com",bg=colour_2, font=("Times New Roman", 12, "bold"))
         email2.place(relx=0.12, rely=0.24)  # x=200,y=100
         Call2.place(relx=0.12, rely=0.4)
 
-        name3 = Label(frame3, text="Hardik Punj", font=("Times New Roman", 12, "bold"))
-        Call3 = Label(frame3, text="Call @: 6283913449", font=("Times New Roman", 12, "bold"))
+        name3 = Label(frame3, text="Hardik Punj",bg=colour_3, font=("Times New Roman", 12, "bold"))
+        Call3 = Label(frame3, text="Call @: 6283913449",bg=colour_3, font=("Times New Roman", 12, "bold"))
         # Name: Gaurav Bhardwaj    Email: bhardwajg2411@gmail.com   call @:6283913449
         name3.place(relx=0.12, rely=0.08)  # X: along length of screen(200),Y: along width of screen(50)
-        email3 = Label(frame3, text="Email: bhardwajg2411@gmail.com", font=("Times New Roman", 12, "bold"))
+        email3 = Label(frame3, text="Email: bhardwajg2411@gmail.com",bg=colour_3, font=("Times New Roman", 12, "bold"))
         email3.place(relx=0.12, rely=0.24)  # x=200,y=100
         Call3.place(relx=0.12, rely=0.4)
 
-        Version = Label(frame4, font=("Times New Roman", 10, "bold"), text="Version:\nBeta(i)")
+        Version = Label(frame4, font=("Times New Roman", 10, "bold"),bg=colour_4, text="Version:\nBeta(i)")
         Version.place(relx=0.05,rely=0.9)
 
         # button widget for linking various events
