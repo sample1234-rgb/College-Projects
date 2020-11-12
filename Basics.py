@@ -111,27 +111,38 @@ class Basics:
             self.cont2.set(0)
         if self.Address2.get() == '' or self.Address2.get() == "Address 2:":
             self.Address2.set("-")
-
-        try:
-            with sqlite3.connect('file.db') as connection:
-                cur = connection.cursor()
-                cur.execute('''INSERT INTO Contact VALUES({0},{1})'''.format(1,self.cont1.get()))
-                if self.cont2.get() != 0:
-                    cur.execute('''INSERT INTO Contact VALUES({0},{1})'''.format(1, self.cont2.get()))
-                # print(cont_id)
-                cur.execute('''INSERT INTO Addresses VALUES({0},{1})'''.format(1,self.Address1.get()))
-                if self.Address2.get() != "-":
-                    cur.execute('''INSERT INTO Addresses VALUES({0},{1})'''.format(1, self.Address2.get()))
-                # print(add_id)
-                cur.execute('''INSERT INTO information VALUES({0},{1},{2},{3},{4},{5})'''.format(self.first_name.get(),self.last_name.get(),self.Email.get(),self.LinkedIn.get(),1,1))
-                connection.commit()
-        except:
-            messagebox.showwarning("Wrong Inputs","Please fill all entries")
-        finally:
+        # Database Connectivity
+        with sqlite3.connect('Database.db') as connection:
+            # with clause works similar to try-catch block exception if file execution is interrupted, it automatically closes the file
+            cur = connection.cursor()
+            cur.execute('''INSERT INTO Contact VALUES(:number)''',{'number': self.cont1.get()})
+            c_id_1 = cur.execute("SELECT oid from Contact where number={}".format(self.cont1.get())).fetchone()
+            c_id_1 = c_id_1[0]
+            c_id_2 = 0
+            cur.execute('''INSERT INTO Addresses VALUES(:address)''',{'address':self.address1.get()})#.format(self.Address1.get()))
+            a_id_1 = cur.execute("SELECT oid,address FROM Addresses where address={}".format(self.address1.get())).fetchall()
+            # for id in a_id_1:
+            #     if (id[1] == self.Address1.get()):
+            #         a_id_1 = id[0]
+            print(a_id_1)
+            a_id_2 = 0
+            if int(self.contact2.get()) != 0:
+                cur.execute('''INSERT INTO Contact VALUES({})'''.format(3, self.cont2.get()))
+                c_id_2 = cur.execute("SELECT oid from Contact where number={}".format(self.contact2.get())).fetchone()
+                print(c_id_2)
+                # c_id_2 = c_id_2
+            if self.Address2.get() != "-":
+                cur.execute('''INSERT INTO Addresses VALUES(:address)''',{'address':self.address2.get()})
+                a_id_2 = cur.execute("SELECT oid,address from Addresses".format(self.address2.get())).fetchone()
+                for id in a_id_2:
+                    if (id[1] == self.Address2.get()):
+                        a_id_2 = id[0]
+            cur.execute('''INSERT INTO information VALUES({0},{1},{2},{3},{4},{5},{6},{7})'''.format(self.first_name.get(),self.last_name.get(),self.Email.get(),self.LinkedIn.get(),c_id_1,c_id_2,a_id_1,a_id_2))
             connection.commit()
             connection.close()
-        q = Qualify.Qualify(self.window)#from module Qualify create object of class Qualify
-        q.start()
+            messagebox.showinfo("Done","Data is Saved")
+            q = Qualify.Qualify(self.window)  # from module Qualify create object of class Qualify
+            q.start()
     def Dev(self):
         dev= Developer.Developer()
 if __name__ == "__main__":#Python representation of main function
