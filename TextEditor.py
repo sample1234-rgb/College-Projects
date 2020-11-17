@@ -73,7 +73,7 @@ class TemplateEditor:
         self.Page.pack()
         # photo_btn = Button(frame_2, text="| O=|' ", bg="white", relief=RIDGE)
         # ds = Designs.Design(Page)
-        self.Text_Label_Frame = LabelFrame(self.frame_1, text="Text", bg="lime", fg="white", font=("Ariel", 12, "bold"))
+        self.Text_Label_Frame = LabelFrame(self.frame_1, text="Text",bg="gray", fg="white", font=("Ariel", 12, "bold"))
         self.Text_Label_Frame.pack(fill=BOTH, expand=1)  # .place(relx=0.1,rely=0.01)
 
         bold_btn = Button(self.Text_Label_Frame, text="B", font=("Times New Roman", 10, "bold"), relief=RIDGE)
@@ -83,16 +83,18 @@ class TemplateEditor:
         underline_btn = Button(self.Text_Label_Frame, text="U", font=("Times New Roman", 10), relief=RIDGE)
         underline_btn.grid(row=0, column=2)
 
-        Object_Label_Frame = LabelFrame(self.frame_1, text="Object", bg="yellow", font=("Ariel", 10, "bold"))
+        Object_Label_Frame = LabelFrame(self.frame_1, text="Object",bg="gray", fg="white", font=("Ariel", 10, "bold"))
         Object_Label_Frame.pack(fill=BOTH, expand=1)  # place(relx=0.1,rely=0.1)
 
         Text_Box_btn = Button(Object_Label_Frame, text="T", font=("Times New Roman", 10), relief=RIDGE)
         Text_Box_btn.grid(row=0, column=0)
-        self.draw_rect_btn = Button(Object_Label_Frame, text="[]", font=("Times New Roman", 10), relief=RIDGE,command=self.Object)
+        self.draw_rect_btn = Button(Object_Label_Frame, text="[]", font=("Times New Roman", 10), relief=RIDGE,command=lambda :self.Object(0))
         self.draw_rect_btn.grid(row=0, column=1)
-        self.draw_line_btn = Button(Object_Label_Frame, text="/", font=("Times New Roman", 10), relief=RIDGE,command = self.Object)
+        # i=1
+        self.draw_line_btn = Button(Object_Label_Frame, text="/", font=("Times New Roman", 10), relief=RIDGE,command = lambda :self.Object(1))
         self.draw_line_btn.grid(row=0, column=2)
-        self.draw_circle_btn = Button(Object_Label_Frame, text="O", font=("Times New Roman", 10), relief=RIDGE,command=self.Object)
+        # i=2
+        self.draw_circle_btn = Button(Object_Label_Frame, text="O", font=("Times New Roman", 10), relief=RIDGE,command=lambda :self.Object(2))
         self.draw_circle_btn.grid(row=0, column=3)
 
         # Panel 3
@@ -120,7 +122,6 @@ class TemplateEditor:
         self.root.mainloop()
     def Next(self):
         self.nxt_btn.config(command=self.ds.nxt)
-
         # nxt_btn.config(command=Next)
 
     def Prev(self):
@@ -202,7 +203,7 @@ class TemplateEditor:
         i = self.Page.create_rectangle(list1[0], list1[1], list1[2], list1[3], fill=list1[4], outline=list1[5])
         btn1 = Button(self.Rect_label, text="text" + str(1))
         btn1.grid(row=4, column=0, columnspan=4)
-        self.add_rect_btn.config(text="^", command=lambda i: self.update_rect)
+        self.add_rect_btn.config(text="^", command=lambda :self.update_rect(i))
 
     def update_rect(self,i):
         list1 = [int(x1_entry.get()), int(y1_entry.get()), int(x2_entry.get()), int(y2_entry.get()), fill_entry.get(),
@@ -213,57 +214,142 @@ class TemplateEditor:
         btn1.grid(row=4, column=0, columnspan=4)
         self.add_rect_btn.config(text=">", command=self.add_rect)
 
-    def Object(self):
+    def Object(self,i):
         self.Rect_label = LabelFrame(self.frame_1, text="[_]")
         self.Rect_label.pack(fill=BOTH, expand=1)  # place(relx=0.1,rely=0.25)
-        # Row 1
-        x1_label = Label(self.Rect_label, text="X1:")
-        x1_label.grid(row=0, column=0)
-        x1_entry = Entry(self.Rect_label, text="X1", width=5)
-        x1_entry.grid(row=0, column=1)
-        x2_label = Label(self.Rect_label, text="X2:")
-        x2_label.grid(row=0, column=2)
-        x2_entry = Entry(self.Rect_label, text="X2", width=5)
-        x2_entry.grid(row=0, column=3)
-        # Row 2
-        y1_label = Label(self.Rect_label, text="Y1:")
-        y1_label.grid(row=1, column=0)
-        y1_entry = Entry(self.Rect_label, text="Y1", width=5)
-        y1_entry.grid(row=1, column=1)
-        y2_label = Label(self.Rect_label, text="Y2:")
-        y2_label.grid(row=1, column=2)
-        y2_entry = Entry(self.Rect_label, text="y2", width=5)
-        y2_entry.grid(row=1, column=3)
-        # Row 3
-        fill_label = Label(self.Rect_label, text="Fill:")
-        fill_label.grid(row=2, column=0)
-        fill_col = colorchooser.askcolor()[1]
-        fill_entry = Entry(self.Rect_label, width=5)
-        if fill_col =='':
-            fill_entry.insert(0, fill_col)
-        # fill_entry = Entry(Rect_label, text="White", width=5)
-        fill_entry.grid(row=2, column=1)
-        outline_label = Label(self.Rect_label, text="Outline:")
-        outline_label.grid(row=2, column=2)
-        outline_entry = Entry(self.Rect_label, text="Black", width=5)
-        outline_entry.grid(row=2, column=3)
-        # Row 4
-        rect_btn = Button(self.Rect_label, text=" + ")
-        rect_btn.grid(row=3, column=2)
-        add_rect_btn = Button(self.Rect_label, text=" > ", command=self.add_rect)
-        # list1 = [int(x1_entry.get()),int(y1_entry.get()),int(x2_entry.get()),int(y2_entry.get()),fill_entry.get(),outline_entry.get()]
-        add_rect_btn.grid(row=3, column=3)
-        self.draw_rect_btn.config(command=self.unpack)
-        self.draw_line_btn.config(command=self.unpack)
-        self.draw_circle_btn.config(command=self.unpack)
+        Obj = Objects(self.Rect_label,self.Page)
+        if i == 0:
+            self.draw_rect_btn.config(command=lambda :self.unpack(i))
+            Obj.add_rect()
+        elif i == 1:
+            Obj.add_line()
+            self.draw_line_btn.config(command=lambda :self.unpack(i))
+        else:
+            Obj.add_oval()
+            self.draw_circle_btn.config(command=lambda :self.unpack(i))
 
-
-    def unpack(self):
+    def unpack(self,i):
         self.Rect_label.pack_forget()
-        self.draw_rect_btn.config(command=self.Object)
-        self.draw_line_btn.config(command=self.Object)
-        self.draw_circle_btn.config(command=self.Object)
+        if i == 0:
+            self.draw_rect_btn.config(command=lambda :self.Object(i))
+        elif i == 1:
+            self.draw_line_btn.config(command=lambda :self.Object(i))
+        elif i == 2:
+            self.draw_circle_btn.config(command=lambda :self.Object(i))
 
+class Objects:
+    i=0
+    def __init__(self,frame,canvas):
+        self.label_frame = frame
+        self.canvas= canvas
+        # Row 1
+        x1_label = Label(self.label_frame, text="X1:")
+        x1_label.grid(row=0, column=0)
+        self.x1_entry = Entry(self.label_frame, width=5)
+        self.x1_entry.grid(row=0, column=1)
+        self.x1_entry.insert(0,0)
+        x2_label = Label(self.label_frame, text="X2:")
+        x2_label.grid(row=0, column=2)
+        self.x2_entry = Entry(self.label_frame, width=5)
+        self.x2_entry.grid(row=0, column=3)
+        self.x2_entry.insert(0,0)
+        # Row 2
+        y1_label = Label(self.label_frame, text="Y1:")
+        y1_label.grid(row=1, column=0)
+        self.y1_entry = Entry(self.label_frame, width=5)
+        self.y1_entry.grid(row=1, column=1)
+        self.y1_entry.insert(0,0)
+        y2_label = Label(self.label_frame, text="Y2:")
+        y2_label.grid(row=1, column=2)
+        self.y2_entry = Entry(self.label_frame, width=5)
+        self.y2_entry.grid(row=1, column=3)
+        self.y2_entry.insert(0,0)
+        # Row 3
+        fill_label = Label(self.label_frame, text="Fill:")
+        fill_label.grid(row=2, column=0)
+        fill_col = self.choose_color()
+        self.fill_entry = Entry(self.label_frame, width=5)
+        # if fill_col != '':
+        self.fill_entry.insert(0, fill_col)
+        # fill_entry = Entry(label_frame, text="White", width=5)
+        self.fill_entry.grid(row=2, column=1)
+        outline_label = Label(self.label_frame, text="Outline:")
+        outline_label.grid(row=2, column=2)
+        self.outline_entry = Entry(self.label_frame, text="Black", width=5)
+        self.outline_entry.grid(row=2, column=3)
+        # Row 4
+        self.minMAX_btn = Button(self.label_frame, text=" - ")
+        self.minMAX_btn.grid(row=3, column=2)
+        self.obJects = []
+        add_obj_btn = Button(self.label_frame, text=" > ")
+        # list1 = [int(x1_entry.get()),int(y1_entry.get()),int(x2_entry.get()),int(y2_entry.get()),fill_entry.get(),outline_entry.get()]
+        add_obj_btn.grid(row=3, column=3)
+
+    def add_rect(self):
+        co_ords= [int(self.x1_entry.get()),int(self.y1_entry.get()),int(self.x2_entry.get()),int(self.y2_entry.get())]
+        fill_color = self.fill_entry.get()
+        outline_color= self.outline_entry.get()
+        obj = self.canvas.create_rectangle(co_ords,fill=fill_color,outline=outline_color)
+        # add obj reference in list
+        Objects.i += 1
+        self.obJects.append(obj)
+        obj_btn = Button(self.label_frame,text ="obj ",command=lambda :self.update_object(Objects.i-1))
+        obj_btn.grid(row=4,column=0,columnspan=3,ipadx=40)
+        obj_del_btn = Button(self.label_frame, text="\||/", command=lambda: self.delete_object)
+        obj_del_btn.grid(row=4, column=3, columnspan=3)
+
+    def add_line(self):
+        co_ords= [int(self.x1_entry.get()),int(self.y1_entry.get()),int(self.x2_entry.get()),int(self.y2_entry.get())]
+        fill_color = self.fill_entry.get()
+        outline_color= self.outline_entry.get()
+        obj = self.canvas.create_line(co_ords,fill=fill_color,outline=outline_color)
+        # add obj reference in list
+        Objects.i += 1
+        self.obJects.append(obj)
+        obj_btn = Button(self.label_frame,text ="obj ",command=lambda :self.update_object(Objects.i-1))
+        obj_btn.grid(row=4,column=0,colspan=3)
+        obj_del_btn = Button(self.label_frame, text="\||/", command=lambda: self.delete_object)
+        obj_del_btn.grid(row=4, column=3, columnspan=3)
+
+    def add_oval(self):
+        co_ords= [int(self.x1_entry.get()),int(self.y1_entry.get()),int(self.x2_entry.get()),int(self.y2_entry.get())]
+        fill_color = self.fill_entry.get()
+        outline_color= self.outline_entry.get()
+        obj = self.canvas.create_oval(co_ords,fill=fill_color,outline=outline_color)
+        # add obj reference in list
+        Objects.i += 1
+        self.obJects.append(obj)
+        obj_btn = Button(self.label_frame,text ="obj ",command=lambda :self.update_object(Objects.i-1))
+        obj_btn.grid(row=4,column=0,colspan=3)
+        obj_del_btn = Button(self.label_frame, text="\||/", command=lambda: self.delete_object)
+        obj_del_btn.grid(row=4, column=3, columnspan=3)
+
+    def delete_object(self,i):
+        #remove from canvas
+        self.canvas.delete(self.obJects[i])
+        #remove from list
+        temp = self.obJects[i]
+        self.obJects.remove(temp)
+
+    def update_object(self,i):
+        # put the data back to form
+        self.x1_entry.config(text="")
+        self.y1_entry.config(text="")
+        self.x2_entry.config(text="")
+        self.y2_entry.config(text="")
+        self.fill_entry.config(text="")
+        self.outline_entry.config(text="")  
+        # Pass new co-ords
+        coords = []
+        # update to canvas
+        self.canvas.coords(self.obJects[i],coords)
+        self.canvas.itemconfig(self.obJects[i],fill="",outline="")
+    def choose_color(self):
+        col = colorchooser.askcolor()
+        return col[1]
+    def Minimize(self):
+        self.label_frame.grid_forget()
+        self.minMAX_btn.config(text=" + ")
 
 '''
 # retrieving from database
