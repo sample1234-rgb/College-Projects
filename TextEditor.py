@@ -118,16 +118,42 @@ class TemplateEditor:
         self.nxt_btn.place(relx=0.95, rely=0.95)
         self.To_Ps("Design_2.ps")
         self.ds = Designs.Design(self.Page)
+        self.Page.tag_bind("token","<ButtonPress-1>", self.drag_start)
+        self.Page.tag_bind("token", "<ButtonRelease-1>", self.drag_stop)
+        self.Page.tag_bind("token", "<B1-Motion>", self.drag)
+        self.Page.tag_bind("token1","<ButtonPress-1>", self.drag_start)
+        self.Page.tag_bind("token1", "<ButtonRelease-1>", self.drag_stop)
+        self.Page.tag_bind("token1", "<B1-Motion>", self.drag)
 
         self.root.mainloop()
     def Next(self):
         self.nxt_btn.config(command=self.ds.nxt)
         # nxt_btn.config(command=Next)
 
-    def Prev(self):
-        self.prev_btn.config(command=self.ds.prev)
-        # prev_btn.config(command=Prev)
+    def drag_start(self, event):
+        """Begining drag of an object"""
+        # record the item and its location
+        self._drag_data["item"] = self.Page.find_closest(event.x, event.y)[0]
+        self._drag_data["x"] = event.x
+        self._drag_data["y"] = event.y
 
+    def drag_stop(self, event):
+        """End drag of an object"""
+        # reset the drag information
+        self._drag_data["item"] = None
+        self._drag_data["x"] = 0
+        self._drag_data["y"] = 0
+    def drag(self, event):
+        """Handle dragging of an object"""
+        # compute how much the mouse has moved
+        delta_x = event.x - self._drag_data["x"]
+        delta_y = event.y - self._drag_data["y"]
+        # move the object the appropriate amount
+        self.Page.move(self._drag_data["item"], delta_x, delta_y)
+        # record the new position
+        self._drag_data["x"] = event.x
+        self._drag_data["y"] = event.y
+        
     def To_Ps(self,file_name):
         # Page.update()
         # if ".ps" not in file_name:
