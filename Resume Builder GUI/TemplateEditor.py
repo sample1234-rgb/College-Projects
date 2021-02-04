@@ -106,16 +106,15 @@ class TemplateEditor:
         self.object_label_frame = LabelFrame(self.frame_11, text="Object", bg="gray", fg="white", font=("Ariel", 10, "bold"))
         self.object_label_frame.pack(fill=BOTH, expand=1)  # .place(relx=0.1,rely=0.1)
 
-        text_box_btn = Button(self.object_label_frame, text="T", font=("Times New Roman", 10), relief=RIDGE)
-        text_box_btn.place(x=0, y=0)
-        self.draw_rect_btn = Button(self.object_label_frame, text="[]", font=("Times New Roman", 10), relief=RIDGE, command=lambda: self.Object(0))
-        self.draw_rect_btn.place(x=20, y=0)
+        self.draw_rect_btn = Button(self.object_label_frame, text="[]", font=("Times New Roman", 10), relief=RIDGE)#
+        self.draw_rect_btn.config(command=self.add_object)#lambda: self.Object(0))
+        self.draw_rect_btn.place(x=0, y=0)
         # i=1
-        self.draw_line_btn = Button(self.object_label_frame, text="/", font=("Times New Roman", 10), relief=RIDGE, command=lambda: self.Object(1))
-        self.draw_line_btn.place(x=40, y=0)
+        self.draw_line_btn = Button(self.object_label_frame, text=" /", font=("Times New Roman", 10), relief=RIDGE, command=lambda: self.Object(1))
+        self.draw_line_btn.place(x=20, y=0)
         # i=2
         self.draw_circle_btn = Button(self.object_label_frame, text="O", font=("Times New Roman", 10), relief=RIDGE, command=lambda: self.Object(2))
-        self.draw_circle_btn.place(x=60, y=0)
+        self.draw_circle_btn.place(x=40, y=0)
 
         # Panel 3
         file_label_frame = LabelFrame(self.frame_3, text="File", bg="gray", fg="white", font=("Ariel", 12, "bold"))
@@ -158,7 +157,7 @@ class TemplateEditor:
     def next(self):
         """Move to next Template of the range"""
         self.nxt_btn.config(command=self.ds.next_Design)
-        self.binder()
+        self.mark()
 
     def binder(self):
         """Bind the tags to the canvas every time new template is created."""
@@ -183,7 +182,6 @@ class TemplateEditor:
         for i, key in enumerate(self.text_fields):
             a = self.text_fields[i].get()
             opts.append(a)
-        print(float(opts[16]))
         if self.tag is not None:
             self.Page.itemconfigure(self.tag, activefill=opts[0], activestipple=opts[1], anchor=opts[2],
                                     angle=opts[3], disabledfill=opts[4], disabledstipple=opts[5], fill=opts[6],
@@ -193,16 +191,25 @@ class TemplateEditor:
             num = self.ds.iterator + 1
             self.ds.iterator = num
             token = "token_"+str(num)
-            self.Page.create_text(float(opts[16]), float(opts[17]), activefill=opts[0], activestipple=opts[1], anchor=opts[2],
+            if(opts[16] == ""):
+                x = 100
+            else:
+                x = float(opts[16])
+            if(opts[17] == ""):
+                y = 100
+            else:
+                y = float(opts[17])
+            self.Page.create_text(x, y, activefill=opts[0], activestipple=opts[1], anchor=opts[2],
                                     angle=float(opts[3]), disabledfill=opts[4], disabledstipple=opts[5], fill=opts[6],
-                                    font=opts[7], justify=opts[8], offset=[int(x) for x in opts[9].split(",")],
-                                  state=opts[10], stipple=opts[11], tags=(token,), text=opts[12], underline=int(opts[14]),
-                                  width=float(opts[15]))
+                                    font=opts[7], justify=opts[8], offset=opts[9], state=opts[10], stipple=opts[11],
+                                  tags=token, text=opts[13], underline=int(opts[14]), width=float(opts[15]))
             # self.Page.coords(token,float(opts[16]),float(opts[17]))
             self.Page.tag_bind(token, "<ButtonPress-1>", self.drag_start)
             self.Page.tag_bind(token, "<ButtonRelease-1>", self.drag_stop)
             self.Page.tag_bind(token, "<B1-Motion>", self.drag)
             self.Page.tag_bind(token, "<Button-3>", self.resize)
+            self.tag = token
+        self.tag = None
 
     def config_object(self):
         opts = []
@@ -225,7 +232,7 @@ class TemplateEditor:
                                     activeoutlinestipple=opts[3], activestipple=opts[4], dash=opts[5], dashoffset=opts[6],
                                     disableddash=opts[7], disabledfill=opts[8], disabledoutine=opts[9],
                                     disabledoutlinestipple=opts[10], disabledstipple=opts[11], disabledwidth=opts[12],
-                                    fill=opts[13], offset=[int(x) for x in opts[9].split(",")], outline=opts[15], outlineoffset=opts[16],
+                                    fill=opts[13], offset=opts[9], outline=opts[15], outlineoffset=opts[16],
                                     outlinestipple=opts[17], state=opts[18], stipple=opts[19], tags=token, width=opts[21])
             # self.Page.coords(token,float(opts[16]),float(opts[17]))
             self.Page.tag_bind(token, "<ButtonPress-1>", self.drag_start)
@@ -235,13 +242,11 @@ class TemplateEditor:
 
     def add_text(self):
         """Add Text item to canvas"""
-        # idk = self.Page.itemconfig(self.tag)
         y = 0
-
         self.Remove_Text_btn.place(x=230, y=0)
         self.config_Text_btn.place(x=230, y=40)
         self.Add_Text_btn.place(x=230, y=80)
-
+        self.texts, self.text_fields = [], []
         for key in self.text_idk:
             item = Label(self.Text_Label_Frame, text=key, bg="gray", fg="white", font=("Airal", 10))
             item.place(x=0, y=y)
@@ -266,6 +271,20 @@ class TemplateEditor:
         y += 20
         self.text_fields.append(item_entry)
         self.texts.append(item)
+
+        if self.tag is None:
+            self.text_fields[2].insert(0, "center")
+            self.text_fields[3].insert(0, "0.0")
+            self.text_fields[6].insert(0, "black")
+            self.text_fields[7].insert(0, ("Arial", 10))
+            self.text_fields[8].insert(0, "left")
+            self.text_fields[9].insert(0, "0,0")
+
+            self.text_fields[13].insert(0, "hello world")
+            self.text_fields[14].insert(0, -1)
+            self.text_fields[15].insert(0, 100)
+            self.text_fields[16].insert(0, 200)
+            self.text_fields[17].insert(0, 100)
 
     def add_object(self):
         """Add shape object to canvas"""
@@ -295,17 +314,23 @@ class TemplateEditor:
         y += 20
         self.text_fields.append(item_entry)
         self.texts.append(item)
+        self.var = IntVar()
+        radio_btn_1 = Radiobutton(self.object_label_frame, text="[_]", bg="gray", fg="white", font=("Airal", 10), variable=self.var, value=0)
+        radio_btn_1.place(x=0, y=y)
+        radio_btn_1 = Radiobutton(self.object_label_frame, text=" O ", bg="gray", fg="white", font=("Airal", 10), variable=self.var, value=1)
+        radio_btn_1.place(x=40, y=y)
+        radio_btn_1 = Radiobutton(self.object_label_frame, text=" / ", bg="gray", fg="white", font=("Airal", 10), variable=self.var, value=2)
+        radio_btn_1.place(x=80, y=y)
 
     def resize(self, event):
         """To update the widgets"""
         self.Remove_Text_btn.place(x=230, y=0)
         self.config_Text_btn.place(x=230, y=40)
         self.Add_Text_btn.place(x=230, y=80)
-
+        self.texts, self.text_fields = [], []
         item = self.Page.find_closest(event.x, event.y)[0]
         self.tag = self.Page.gettags(item)[0]
-        print(self.tag)
-
+        # print(self.tag)
         if 'outline' in self.Page.itemconfig(self.tag).keys():
             self.add_object()
             for i, key in enumerate(self.object_idk):
@@ -319,12 +344,9 @@ class TemplateEditor:
             for i, key in enumerate(self.text_idk):
                 config = self.Page.itemcget(self.tag, key)
                 self.text_fields[i].insert(0, config)
-        # print([self.Page.itemconfig(self.tag).keys()])
-        # self.add_text()
-        coors = self.Page.coords(self.tag)
-        self.text_fields[16].insert(0, str(coors[0]))
-        self.text_fields[17].insert(0, str(coors[1]))
-        print(coors, len(self.text_fields))
+            coors = self.Page.coords(self.tag)
+            self.text_fields[16].insert(0, str(coors[0]))
+            self.text_fields[17].insert(0, str(coors[1]))
 
     def drag_start(self, event):
         """Begining drag of an object"""
@@ -368,7 +390,7 @@ class TemplateEditor:
     def prev(self):
         """To move to Previous templates."""
         self.prev_btn.config(command=self.ds.prev_Design)
-        self.binder()
+        # self.binder()
         # prev_btn.config(command=Prev)
 
     def to_ps(self, file_name, color="color"):
