@@ -1,7 +1,9 @@
+import math
 from tkinter import *
 from tkinter import filedialog, font, colorchooser, messagebox, ttk
 import os, sys, sqlite3
 from docx import Document
+import time
 from fpdf import FPDF
 import Designs
 
@@ -13,12 +15,12 @@ class TemplateEditor:
         self.root.iconbitmap("curriculum-vitae.ico")
         self.root.geometry(f"{self.root.winfo_screenwidth()-3}x{self.root.winfo_screenheight()-3}+0+0")
         self.Mark = True
-        self.wm,self.tag = None, None
+        self.wm, self.tag = None, None
         self.texts, self.text_fields = [], []
         self.var = IntVar()
         self._drag_data = {"x": 0, "y": 0, "item": None}
-        self.text_idk = ["activefill", "activestipple", "anchor", "angle", "disabledfill", "disabledstipple", "fill",
-                        "font", "justify", "offset", "state", "stipple", "tags", "text", "underline", "width"]
+        self.text_idk = ["activefill", "activestipple", "anchor", "angle", "fill", "font", "justify", "offset", "state",
+                         "stipple", "tags", "text", "underline", "width", "disabledfill", "disabledstipple"]
         self.text_or_object = True
         self.object_idk = ['activedash', 'activefill', 'activeoutline', 'activeoutlinestipple', 'activestipple',
                            'activewidth', 'dash', 'dashoffset', 'disableddash', 'disabledfill', 'disabledoutline',
@@ -64,34 +66,27 @@ class TemplateEditor:
 
         self.Text_Label_Frame = LabelFrame(self.frame_1, text="Text", bg="gray", fg="white", font=("Arial", 12, "bold"))
         self.Text_Label_Frame.pack(fill=BOTH, expand=1)  # .place(relx=0.1,rely=0.01)
-        self.Remove_Text_btn = Button(self.Text_Label_Frame, text=" X ", bg="#9c3030", fg="white", bd=0, font=("Arial", 12, "bold"), command=self.remove_text)
+        self.Remove_Text_btn = Button(self.Text_Label_Frame, text=" X ", bg="#9c3030", fg="white", bd=0,
+                                      font=("Arial", 12, "bold"), command=self.remove_text)
         # self.Remove_Text_btn.place(x=0, y=20)
-        self.config_Text_btn = Button(self.Text_Label_Frame, text=" ->", bg="gray", fg="white", bd=0, font=("Arial", 12, "bold"), command=self.config_text)
+        self.config_Text_btn = Button(self.Text_Label_Frame, text=" ->", bg="gray", fg="white", bd=0,
+                                      font=("Arial", 12, "bold"), command=self.config_text)
         # self.config_Text_btn.place(x=0, y=50)
-        self.Add_Text_btn = Button(self.Text_Label_Frame, text=" + ", bg="#c0c0c0", fg="white", bd=0, font=("Arial", 12, "bold"), height=10, width=15, command=self.add_text)
+        self.Add_Text_btn = Button(self.Text_Label_Frame, text=" + ", bg="#c0c0c0", fg="white", bd=0,
+                                   font=("Arial", 12, "bold"), height=10, width=15, command=self.add_text)
         self.Add_Text_btn.place(x=50, y=70)
 
         self.object_label_frame = LabelFrame(self.frame_11, text="Object", bg="gray", fg="white", font=("Ariel", 10, "bold"))
         self.object_label_frame.pack(fill=BOTH, expand=1)  # .place(relx=0.1,rely=0.1)
         self.Remove_object_btn = Button(self.object_label_frame, text=" X ", bg="#9c3030", fg="white", bd=0,
-                                      font=("Arial", 12, "bold"), command=self.remove_text)
+                                        font=("Arial", 12, "bold"), command=self.remove_text)
         # self.Remove_object_btn.place(x=0, y=20)
         self.config_object_btn = Button(self.object_label_frame, text=" ->", bg="gray", fg="white", bd=0,
-                                      font=("Arial", 12, "bold"), command=self.config_object)
+                                        font=("Arial", 12, "bold"), command=self.config_object)
         # self.config_object_btn.place(x=0, y=50)
         self.Add_object_btn = Button(self.object_label_frame, text=" + ", bg="#c0c0c0", fg="white", bd=0,
-                                   font=("Arial", 12, "bold"), height=10, width=15, command=self.add_object)
+                                     font=("Arial", 12, "bold"), height=10, width=15, command=self.add_object)
         self.Add_object_btn.place(x=50, y=70)
-        '''self.draw_rect_btn = Button(self.object_label_frame, text="[]", font=("Times New Roman", 10), relief=RIDGE)#
-        self.draw_rect_btn.config(command=self.add_object)#lambda: self.Object(0))
-        self.draw_rect_btn.place(x=0, y=0)
-        # i=1
-        self.draw_line_btn = Button(self.object_label_frame, text=" /", font=("Times New Roman", 10), relief=RIDGE, command=lambda: self.Object(1))
-        self.draw_line_btn.place(x=20, y=0)
-        # i=2
-        self.draw_circle_btn = Button(self.object_label_frame, text="O", font=("Times New Roman", 10), relief=RIDGE, command=lambda: self.Object(2))
-        self.draw_circle_btn.place(x=40, y=0)
-        '''
         # Panel 3
         file_label_frame = LabelFrame(self.frame_3, text="File", bg="gray", fg="white", font=("Ariel", 12, "bold"))
         file_label_frame.pack(fill=X, expand=1)  # place(relx=0.1,rely=0.01)
@@ -117,23 +112,19 @@ class TemplateEditor:
 
         self.mark()
         self.binder()  # For making all tokens bind to Events
+
         self.root.mainloop()
 
     def mark(self):
         """For the sake of Publicity: added WaterMark text"""
         if self.Mark:
             self.Mark = False
-            self.watermark_btn.config(bg="#fedcba",relief=RIDGE)
+            self.watermark_btn.config(bg="#fedcba", relief=RIDGE)
             self.Page.delete(self.wm)
         else:
             self.Mark = True
             self.watermark_btn.config(bg="#abcdef",relief=GROOVE)
             self.wm = self.Page.create_text(700, 980, text="Made by Resume Builder", font=("Arial Black", 6))
-
-    def next(self):
-        """Move to next Template of the range"""
-        self.nxt_btn.config(command=self.ds.next_Design)
-        self.mark()
 
     def binder(self):
         """Bind the tags to the canvas every time new template is created."""
@@ -144,131 +135,28 @@ class TemplateEditor:
             self.Page.tag_bind(strng, "<B1-Motion>", self.drag)
             self.Page.tag_bind(strng, "<Button-3>", self.resize)
 
-    def remove_text(self):
-        """Remove the Text from the canvas"""
-        # print(tag)
-        self.Page.delete(self.tag)
-        for i, key in enumerate(self.text_fields):
-            self.text_fields[i].place_forget()
-            self.texts[i].place_forget()
-
-    def config_text(self):
-        """Change the Text of the Canvas"""
-        opts = []
-        for i, key in enumerate(self.text_fields):
-            a = self.text_fields[i].get()
-            opts.append(a)
-        if self.tag is not None:
-            self.Page.itemconfigure(self.tag, activefill=opts[0], activestipple=opts[1], anchor=opts[2],
-                                    angle=opts[3], disabledfill=opts[4], disabledstipple=opts[5], fill=opts[6],
-                                    font=opts[7], justify=opts[8], offset=opts[9], state=opts[10],
-                                    stipple=opts[11], tags=opts[12], text=opts[13], underline=opts[14], width=opts[15])
-        else:
-            num = self.ds.iterator + 1
-            self.ds.iterator = num
-            token = "token_"+str(num)
-            if(opts[16] == ""):
-                x = 100
-            else:
-                x = float(opts[16])
-            if(opts[17] == ""):
-                y = 100
-            else:
-                y = float(opts[17])
-            self.Page.create_text(x, y, activefill=opts[0], activestipple=opts[1], anchor=opts[2],
-                                    angle=float(opts[3]), disabledfill=opts[4], disabledstipple=opts[5], fill=opts[6],
-                                    font=opts[7], justify=opts[8], offset=opts[9], state=opts[10], stipple=opts[11],
-                                  tags=token, text=opts[13], underline=int(opts[14]), width=float(opts[15]))
-            # self.Page.coords(token,float(opts[16]),float(opts[17]))
-            self.Page.tag_bind(token, "<ButtonPress-1>", self.drag_start)
-            self.Page.tag_bind(token, "<ButtonRelease-1>", self.drag_stop)
-            self.Page.tag_bind(token, "<B1-Motion>", self.drag)
-            self.Page.tag_bind(token, "<Button-3>", self.resize)
-            self.tag = token
-
-    def config_object(self):
-        """Update canvas objects"""
-        opts = []
-        for i, key in enumerate(self.text_fields):
-            a = self.text_fields[i].get()
-            opts.append(a)
-
-        if self.tag is not None:
-            self.Page.itemconfigure(self.tag, activedash=opts[0], activefill=opts[1], activeoutline=opts[2],
-                                    activeoutlinestipple=opts[3], activestipple=opts[4], activewidth=opts[5], dash=opts[6], dashoffset=opts[7],
-                                    disableddash=opts[8], disabledfill=opts[9], disabledoutline=opts[10],
-                                    disabledoutlinestipple=opts[11], disabledstipple=opts[12], disabledwidth=opts[13],
-                                    fill=opts[14], offset=opts[15], outline=opts[16], outlineoffset=opts[17],
-                                    outlinestipple=opts[18], state=opts[19], stipple=opts[20], tags=opts[21], width=opts[22])
-        else:
-            num = self.ds.iterator + 1
-            self.ds.iterator = num
-            token = "token_" + str(num)
-
-            if (self.var.get() == 1):
-                self.Page.create_line(float(opts[23]), float(opts[24]), 100, 100, activedash=opts[0],
-                                           activefill=opts[1], activeoutline=opts[2],
-                                           activeoutlinestipple=opts[3], activestipple=opts[4], activewidth=opts[5],
-                                           dash=opts[6], dashoffset=opts[7],
-                                           disableddash=opts[8], disabledfill=opts[9], disabledoutline=opts[10],
-                                           disabledoutlinestipple=opts[11], disabledstipple=opts[12],
-                                           disabledwidth=opts[13],
-                                           fill=opts[14], offset=opts[15], outline=opts[16], outlineoffset=opts[17],
-                                           outlinestipple=opts[18], state=opts[19], stipple=opts[20], tags=token,
-                                           width=opts[22])
-            elif (self.var.get() == 2):
-                self.Page.create_rectangle(float(opts[23]), float(opts[24]), 100, 100, activedash=opts[0], activefill=opts[1], activeoutline=opts[2],
-                                        activeoutlinestipple=opts[3], activestipple=opts[4], activewidth=opts[5], dash=opts[6], dashoffset=opts[7],
-                                        disableddash=opts[8], disabledfill=opts[9], disabledoutline=opts[10],
-                                        disabledoutlinestipple=opts[11], disabledstipple=opts[12], disabledwidth=opts[13],
-                                        fill=opts[14], offset=opts[15], outline=opts[16], outlineoffset=opts[17],
-                                        outlinestipple=opts[18], state=opts[19], stipple=opts[20], tags=token, width=opts[22])
-            elif (self.var.get() == 3):
-                self.Page.create_polygon(float(opts[23]), float(opts[24]), 100, 100, activedash=opts[0],
-                                           activefill=opts[1], activeoutline=opts[2],
-                                           activeoutlinestipple=opts[3], activestipple=opts[4], activewidth=opts[5],
-                                           dash=opts[6], dashoffset=opts[7],
-                                           disableddash=opts[8], disabledfill=opts[9], disabledoutline=opts[10],
-                                           disabledoutlinestipple=opts[11], disabledstipple=opts[12],
-                                           disabledwidth=opts[13],
-                                           fill=opts[14], offset=opts[15], outline=opts[16], outlineoffset=opts[17],
-                                           outlinestipple=opts[18], state=opts[19], stipple=opts[20], tags=token,
-                                           width=opts[22])
-            elif (self.var.get() == 4):
-                self.Page.create_oval(float(opts[23]), float(opts[24]), 100, 100, activedash=opts[0],
-                                           activefill=opts[1], activeoutline=opts[2],
-                                           activeoutlinestipple=opts[3], activestipple=opts[4], activewidth=opts[5],
-                                           dash=opts[6], dashoffset=opts[7],
-                                           disableddash=opts[8], disabledfill=opts[9], disabledoutline=opts[10],
-                                           disabledoutlinestipple=opts[11], disabledstipple=opts[12],
-                                           disabledwidth=opts[13],
-                                           fill=opts[14], offset=opts[15], outline=opts[16], outlineoffset=opts[17],
-                                           outlinestipple=opts[18], state=opts[19], stipple=opts[20], tags=token,
-                                           width=opts[22])
-
-            # self.Page.coords(token,float(opts[16]),float(opts[17]))
-            self.Page.tag_bind(token, "<ButtonPress-1>", self.drag_start)
-            self.Page.tag_bind(token, "<ButtonRelease-1>", self.drag_stop)
-            self.Page.tag_bind(token, "<B1-Motion>", self.drag)
-            self.Page.tag_bind(token, "<Button-3>", self.resize)
-
     def add_text(self):
         """Add Text item to canvas"""
         y = 0
-        self.Remove_Text_btn.place(x=0, y=400)
-        self.config_Text_btn.place(x=30, y=400)
-        self.Add_Text_btn.place(x=60, y=400)
-        self.Add_Text_btn.config(height=0, width=0, bg="#309c30")
-
         self.texts, self.text_fields = [], []
+        dk = []
         for key in self.text_idk:
-            item = Label(self.Text_Label_Frame, text=key, bg="gray", fg="white", font=("Airal", 10))
-            item.place(x=0, y=y)
-            item_entry = Entry(self.Text_Label_Frame, width=20, bd=0)
-            item_entry.place(x=100, y=y)
-            y += 20
-            self.text_fields.append(item_entry)
-            self.texts.append(item)
+            if "disable" in key:
+                dk.append(key)
+            else:
+                if key == 'font':
+                    item = Label(self.Text_Label_Frame, text=key, bg="gray", fg="white", font=("Airal", 10))
+                    item.place(x=0, y=y)
+                    item_entry = FontEditor(self.Text_Label_Frame, x=100, y=y)
+                    y += 50
+                else:
+                    item = Label(self.Text_Label_Frame, text=key, bg="gray", fg="white", font=("Airal", 10))
+                    item.place(x=0, y=y)
+                    item_entry = Entry(self.Text_Label_Frame, width=20, bd=0)
+                    item_entry.place(x=100, y=y)
+                    y += 20
+                self.text_fields.append(item_entry)
+                self.texts.append(item)
 
         item = Label(self.Text_Label_Frame, text=" X ", bg="gray", fg="white", font=("Airal", 10))
         item.place(x=0, y=y)
@@ -285,20 +173,27 @@ class TemplateEditor:
         y += 20
         self.text_fields.append(item_entry)
         self.texts.append(item)
-        print(y)
-        if self.tag is None:
+        # print((self.texts.__len__(),self.text_fields.__len__()))
+        disabled_key = Disabled(self.Text_Label_Frame, x=0, y=y, dk=dk)
+        for i in dk:
+            disabled_key.add(i)
+        if self.tag is None :
             self.text_fields[2].insert(0, "center")
             self.text_fields[3].insert(0, "0.0")
-            self.text_fields[6].insert(0, "black")
-            self.text_fields[7].insert(0, ("Arial", 10))
-            self.text_fields[8].insert(0, "left")
-            self.text_fields[9].insert(0, "0,0")
+            self.text_fields[4].insert(0, "black")
+            self.text_fields[6].insert(0, "left")
+            self.text_fields[7].insert(0, "0,0")
 
-            self.text_fields[13].insert(0, "hello world")
-            self.text_fields[14].insert(0, -1)
+            self.text_fields[11].insert(0, "hello world")
+            self.text_fields[12].insert(0, -1)
+            self.text_fields[13].insert(0, 100)
+            self.text_fields[14].insert(0, 200)
             self.text_fields[15].insert(0, 100)
-            self.text_fields[16].insert(0, 200)
-            self.text_fields[17].insert(0, 100)
+
+        self.Remove_Text_btn.place(x=0, y=430)
+        self.config_Text_btn.place(x=30, y=430)
+        self.Add_Text_btn.place(x=60, y=430)
+        self.Add_Text_btn.config(height=0, width=0, bg="#309c30")
 
     def add_object(self):
         """Add shape object to canvas"""
@@ -309,7 +204,6 @@ class TemplateEditor:
         self.Add_object_btn.place(x=60, y=550)
         self.Add_object_btn.config(height=0, width=0, bg="#309c30")
 
-
         t = Tabs(self.object_label_frame)
         frame_temp = t.frame1
         print(t.notebook.tab(1))
@@ -318,14 +212,18 @@ class TemplateEditor:
         #                    orient=HORIZONTAL, variable=self.var)
         # new_slider.place(x=0, y=y)
         y += 0
+        dk = []
         for key in self.object_idk:
-            item = Label(frame_temp, text=key, bg="gray", fg="white", font=("Arial", 10))
-            item.place(x=0, y=y)
-            item_entry = Entry(frame_temp, width=20, bd=0)
-            item_entry.place(x=150, y=y)
-            y += 20
-            self.text_fields.append(item_entry)
-            self.texts.append(item)
+            if "disable" in key:
+                dk.append(key)
+            else:
+                item = Label(frame_temp, text=key, bg="gray", fg="white", font=("Arial", 10))
+                item.place(x=0, y=y)
+                item_entry = Entry(frame_temp, width=20, bd=0)
+                item_entry.place(x=150, y=y)
+                y += 20
+                self.text_fields.append(item_entry)
+                self.texts.append(item)
 
         item = Label(frame_temp, text=" X ", bg="gray", fg="white", font=("Arial", 10))
         item.place(x=0, y=y)
@@ -357,6 +255,11 @@ class TemplateEditor:
         y += 20
         self.text_fields.append(item_entry)
         self.texts.append(item)
+
+        disabled_key = Disabled(frame_temp, x=0, y=y-40,dk=dk)
+        print(dk)
+        for i in dk:
+            disabled_key.add(i)
         if self.tag is None:
             self.text_fields[2].insert(0, "black")
             self.text_fields[3].insert(0, "0.0")
@@ -377,7 +280,7 @@ class TemplateEditor:
 
         item = self.Page.find_closest(event.x, event.y)[0]
         self.tag = self.Page.gettags(item)[0]
-        # print(self.tag)
+
         if 'outline' in self.Page.itemconfig(self.tag).keys():
             self.add_object()
             for i, key in enumerate(self.object_idk):
@@ -388,14 +291,134 @@ class TemplateEditor:
             self.text_fields[24].insert(0, str(coors[1]))
         else:
             self.add_text()
-            edit_btn = Button(self.Text_Label_Frame, text="~",command=self.notebook)
-            edit_btn.place(x=225,y=260)
+            font_btn = Button(self.Text_Label_Frame, text="f-", command=self.fonteditor)
+            font_btn.place(x=225, y=180)
+
+            edit_btn = Button(self.Text_Label_Frame, text="~", command=self.notebook)
+            edit_btn.place(x=225, y=280)
             for i, key in enumerate(self.text_idk):
                 config = self.Page.itemcget(self.tag, key)
+                print(config, "i:", i)
                 self.text_fields[i].insert(0, config)
             coors = self.Page.coords(self.tag)
-            self.text_fields[16].insert(0, str(coors[0]))
-            self.text_fields[17].insert(0, str(coors[1]))
+            print(coors)
+            self.text_fields[14].insert(0, str(coors[0]))
+            self.text_fields[15].insert(0, str(coors[1]))
+
+    def config_text(self):
+        """Change the Text of the Canvas"""
+        opts = []
+        for i, key in enumerate(self.text_fields):
+            a = self.text_fields[i].get()
+            opts.append(a)
+        print(opts[5])
+        if self.tag is not None:
+            self.Page.itemconfigure(self.tag, activefill=opts[0], activestipple=opts[1], anchor=opts[2],
+                                    angle=opts[3], fill=opts[4], font=opts[5], justify=opts[6], offset=opts[7],
+                                    state=opts[8], stipple=opts[9], tags=opts[10], text=opts[11], underline=opts[12],
+                                    width=opts[13], disabledfill="", disabledstipple="")
+            self.Page.coords(self.tag, opts[14], opts[15])
+        else:
+            num = self.ds.iterator + 1
+            self.ds.iterator = num
+            token = "token_"+str(num)
+            if(opts[14] == ""):
+                x = 100
+            else:
+                x = float(opts[14])
+            if(opts[15] == ""):
+                y = 100
+            else:
+                y = float(opts[15])
+            self.Page.create_text(x, y, activefill=opts[0], activestipple=opts[1], anchor=opts[2],
+                                  angle=float(opts[3]), fill=opts[4], font=opts[5], justify=opts[6], offset=opts[7],
+                                  state=opts[8], stipple=opts[9], tags=token, text=opts[11], underline=int(opts[12]),
+                                  width=float(opts[13]), disabledfill="", disabledstipple="")
+            self.Page.coords(token, float(opts[14]), float(opts[15]))
+            self.Page.tag_bind(token, "<ButtonPress-1>", self.drag_start)
+            self.Page.tag_bind(token, "<ButtonRelease-1>", self.drag_stop)
+            self.Page.tag_bind(token, "<B1-Motion>", self.drag)
+            self.Page.tag_bind(token, "<Button-3>", self.resize)
+            self.tag = token
+
+    def config_object(self):
+        """Update canvas objects"""
+        opts = []
+        for i, key in enumerate(self.text_fields):
+            a = self.text_fields[i].get()
+            opts.append(a)
+
+        if self.tag is not None:
+            self.Page.itemconfigure(self.tag, activedash=opts[0], activefill=opts[1], activeoutline=opts[2],
+                                    activeoutlinestipple=opts[3], activestipple=opts[4], activewidth=opts[5],
+                                    dash=opts[6], dashoffset=opts[7], disableddash=opts[8], disabledfill=opts[9],
+                                    disabledoutline=opts[10], disabledoutlinestipple=opts[11], disabledstipple=opts[12],
+                                    disabledwidth=opts[13], fill=opts[14], offset=opts[15], outline=opts[16],
+                                    outlineoffset=opts[17], outlinestipple=opts[18], state=opts[19], stipple=opts[20],
+                                    tags=opts[21], width=opts[22])
+        else:
+            num = self.ds.iterator + 1
+            self.ds.iterator = num
+            token = "token_" + str(num)
+
+            if self.var.get() == 1:
+                self.Page.create_line(float(opts[23]), float(opts[24]), 100, 100, activedash=opts[0],
+                                      activefill=opts[1], activeoutline=opts[2],
+                                      activeoutlinestipple=opts[3], activestipple=opts[4], activewidth=opts[5],
+                                      dash=opts[6], dashoffset=opts[7],
+                                      disableddash=opts[8], disabledfill=opts[9], disabledoutline=opts[10],
+                                      disabledoutlinestipple=opts[11], disabledstipple=opts[12],
+                                      disabledwidth=opts[13],
+                                      fill=opts[14], offset=opts[15], outline=opts[16], outlineoffset=opts[17],
+                                      outlinestipple=opts[18], state=opts[19], stipple=opts[20], tags=token,
+                                      width=opts[22])
+            elif self.var.get() == 2:
+                self.Page.create_rectangle(float(opts[23]), float(opts[24]), 100, 100, activedash=opts[0], activefill=opts[1], activeoutline=opts[2],
+                                           activeoutlinestipple=opts[3], activestipple=opts[4], activewidth=opts[5], dash=opts[6], dashoffset=opts[7],
+                                           disableddash=opts[8], disabledfill=opts[9], disabledoutline=opts[10],
+                                           disabledoutlinestipple=opts[11], disabledstipple=opts[12], disabledwidth=opts[13],
+                                           fill=opts[14], offset=opts[15], outline=opts[16], outlineoffset=opts[17],
+                                           outlinestipple=opts[18], state=opts[19], stipple=opts[20], tags=token, width=opts[22])
+            elif self.var.get() == 3:
+                self.Page.create_polygon(float(opts[23]), float(opts[24]), 100, 100, activedash=opts[0],
+                                         activefill=opts[1], activeoutline=opts[2],
+                                         activeoutlinestipple=opts[3], activestipple=opts[4], activewidth=opts[5],
+                                         dash=opts[6], dashoffset=opts[7],
+                                         disableddash=opts[8], disabledfill=opts[9], disabledoutline=opts[10],
+                                         disabledoutlinestipple=opts[11], disabledstipple=opts[12],
+                                         disabledwidth=opts[13],
+                                         fill=opts[14], offset=opts[15], outline=opts[16], outlineoffset=opts[17],
+                                         outlinestipple=opts[18], state=opts[19], stipple=opts[20], tags=token,
+                                         width=opts[22])
+            elif self.var.get() == 4:
+                self.Page.create_oval(float(opts[23]), float(opts[24]), 100, 100, activedash=opts[0],
+                                      activefill=opts[1], activeoutline=opts[2],
+                                      activeoutlinestipple=opts[3], activestipple=opts[4], activewidth=opts[5],
+                                      dash=opts[6], dashoffset=opts[7],
+                                      disableddash=opts[8], disabledfill=opts[9], disabledoutline=opts[10],
+                                      disabledoutlinestipple=opts[11], disabledstipple=opts[12],
+                                      disabledwidth=opts[13],
+                                      fill=opts[14], offset=opts[15], outline=opts[16], outlineoffset=opts[17],
+                                      outlinestipple=opts[18], state=opts[19], stipple=opts[20], tags=token,
+                                      width=opts[22])
+
+            # self.Page.coords(token,float(opts[16]),float(opts[17]))
+            self.Page.tag_bind(token, "<ButtonPress-1>", self.drag_start)
+            self.Page.tag_bind(token, "<ButtonRelease-1>", self.drag_stop)
+            self.Page.tag_bind(token, "<B1-Motion>", self.drag)
+            self.Page.tag_bind(token, "<Button-3>", self.resize)
+
+    def remove_text(self):
+        """Remove the Text from the canvas"""
+        # print(tag)
+        self.Page.delete(self.tag)
+        for i, key in enumerate(self.text_fields):
+            self.text_fields[i].place_forget()
+            self.texts[i].place_forget()
+
+    def fonteditor(self):
+        wn = Tk()
+        f = FontEditor(wn, 0, 0, True)
 
     def notebook(self):
         """Notebook for instant edits"""
@@ -409,11 +432,11 @@ class TemplateEditor:
         # create a text area
         text_area = Text(Main_Frame, bg="white", width=60, wrap=WORD)
         text_area.place(x=0, y=0)
-        text_area.insert('1.0', self.text_fields[13].get())
+        text_area.insert('1.0', self.text_fields[11].get())
 
         def save():
-            self.text_fields[13].delete(0, END)
-            self.text_fields[13].insert(0, text_area.get("1.0", END))
+            self.text_fields[11].delete(0, END)
+            self.text_fields[11].insert(0, text_area.get("1.0", END))
             exitwindow()
 
         def select():
@@ -425,18 +448,21 @@ class TemplateEditor:
                 root.destroy()
 
         # Save button
-        save_btn = Button(Main_Frame, text=" SAVE ", font=("Times New Roman", 10, "bold"), bg="#6cff6c", bd=0, relief=FLAT, command=save)
+        save_btn = Button(Main_Frame, text=" SAVE ", font=("Times New Roman", 10, "bold"), bg="#6cff6c", bd=0,
+                          relief=FLAT, command=save)
         save_btn.place(x=320, y=400)
         # Select all button
-        select_all_btn = Button(Main_Frame, text="SELECT", font=("Times New Roman", 10, "bold"), bg="#30c2f2", bd=0, relief=FLAT, command=select)
+        select_all_btn = Button(Main_Frame, text="SELECT", font=("Times New Roman", 10, "bold"), bg="#30c2f2", bd=0,
+                                relief=FLAT, command=select)
         select_all_btn.place(x=200, y=400)
 
         # cancel button
-        cancel_btn = Button(Main_Frame, text="CANCEL", font=("Times New Roman", 10, "bold"), bg="#ff3c30", bd=0, relief=FLAT, command=exitwindow)
+        cancel_btn = Button(Main_Frame, text="CANCEL", font=("Times New Roman", 10, "bold"), bg="#ff3c30", bd=0,
+                            relief=FLAT, command=exitwindow)
         cancel_btn.place(x=250, y=400)
 
     def drag_start(self, event):
-        """Begining drag of an object"""
+        """Start drag of an object"""
         # record the item and its location
         item = self.Page.find_closest(event.x, event.y)[0]
         tag = self.Page.gettags(item)[0]
@@ -476,8 +502,11 @@ class TemplateEditor:
     def prev(self):
         """To move to Previous templates."""
         self.prev_btn.config(command=self.ds.prev_Design)
-        # self.binder()
-        # prev_btn.config(command=Prev)
+
+    def next(self):
+        """Move to next Template of the range"""
+        self.nxt_btn.config(command=self.ds.next_Design)
+        self.mark()
 
     def to_ps(self, file_name, color="color"):
         """Saves the template as .ps (PostScript) file"""
@@ -490,7 +519,6 @@ class TemplateEditor:
         pdf.add_page()
         pdf.output(file_name, "F")
 
-    # New File option
     def new_file(self):
         global opened
         opened = False
@@ -530,7 +558,7 @@ class TemplateEditor:
 
     def save_as_file(self):
         file = filedialog.asksaveasfile(defaultextension=".*", initialdir="C:", title="Save File", filetypes=(
-        ("Text Files", "*.txt"), ("Document Files", "*.DOCX"), ("All Files", "*.*"), ("Post Script Files", "*.ps")))
+            ("Text Files", "*.txt"), ("Document Files", "*.DOCX"), ("All Files", "*.*"), ("Post Script Files", "*.ps")))
         if file:
             # Update the status
             name = file
@@ -553,7 +581,7 @@ class TemplateEditor:
         self.frame_3.config(bg=back)
         self.panned_window.config(bg="#cccccc")
         self.Page.config(bg="white")
-        self.Apperance_btn.config(relief=RIDGE,command=self.dark)
+        self.Apperance_btn.config(relief=RIDGE, command=self.dark)
 
     def dark(self):
         """Dark Theme"""
@@ -565,158 +593,12 @@ class TemplateEditor:
         self.Page.config(bg="#616161")
         self.Apperance_btn.config(relief=GROOVE, command=self.light)
 
-    def Object(self, i):
-        self.Rect_label = LabelFrame(self.frame_1, text="[_]")
-        self.Rect_label.pack(fill=BOTH, expand=1)  # place(relx=0.1,rely=0.25)
-        self.Obj = Objects(self.Rect_label, self.Page, i)
-        if i == 0:
-            self.draw_rect_btn.config(command=lambda: self.unpack(i))
-            self.Obj.add_rect()
-        elif i == 1:
-            self.Obj.add_line()
-            self.draw_line_btn.config(command=lambda: self.unpack(i))
-        else:
-            self.Obj.add_oval()
-            self.draw_circle_btn.config(command=lambda: self.unpack(i))
-
-    def unpack(self, i):
-        self.Rect_label.pack_forget()
-        if i == 0:
-            self.draw_rect_btn.config(command=lambda: self.Object(i))
-        elif i == 1:
-            self.draw_line_btn.config(command=lambda: self.Object(i))
-        elif i == 2:
-            self.draw_circle_btn.config(command=lambda: self.Object(i))
-
-
-class Objects:
-    i=0
-    def __init__(self,frame,canvas,i):
-        self.label_frame = frame
-        self.canvas= canvas
-
-        # Row 1
-        x1_label = Label(self.label_frame, text="X1:")
-        x1_label.grid(row=0, column=0)
-        self.x1_entry = Entry(self.label_frame, width=5)
-        self.x1_entry.grid(row=0, column=1)
-        self.x1_entry.insert(0,0)
-        x2_label = Label(self.label_frame, text="X2:")
-        x2_label.grid(row=0, column=2)
-        self.x2_entry = Entry(self.label_frame, width=5)
-        self.x2_entry.grid(row=0, column=3)
-        self.x2_entry.insert(0,0)
-        # Row 2
-        y1_label = Label(self.label_frame, text="Y1:")
-        y1_label.grid(row=1, column=0)
-        self.y1_entry = Entry(self.label_frame, width=5)
-        self.y1_entry.grid(row=1, column=1)
-        self.y1_entry.insert(0,0)
-        y2_label = Label(self.label_frame, text="Y2:")
-        y2_label.grid(row=1, column=2)
-        self.y2_entry = Entry(self.label_frame, width=5)
-        self.y2_entry.grid(row=1, column=3)
-        self.y2_entry.insert(0,0)
-        # Row 3
-        fill_label = Label(self.label_frame, text="Fill:")
-        fill_label.grid(row=2, column=0)
-        fill_col = self.choose_color()
-        self.fill_entry = Entry(self.label_frame, width=5)
-        # if fill_col != '':
-        self.fill_entry.insert(0, fill_col)
-        # fill_entry = Entry(label_frame, text="White", width=5)
-        self.fill_entry.grid(row=2, column=1)
-        outline_label = Label(self.label_frame, text="Outline:")
-        outline_label.grid(row=2, column=2)
-        self.outline_entry = Entry(self.label_frame, text="Black", width=5)
-        self.outline_entry.grid(row=2, column=3)
-        # Row 4
-        self.minMAX_btn = Button(self.label_frame, text=" - ")
-        self.minMAX_btn.grid(row=3, column=2)
-        self.obJects = []
-        add_obj_btn = Button(self.label_frame, text=" > ")
-        # list1 = [int(x1_entry.get()),int(y1_entry.get()),int(x2_entry.get()),int(y2_entry.get()),fill_entry.get(),outline_entry.get()]
-        add_obj_btn.grid(row=3, column=3)
-        if i == 0:
-            add_obj_btn.config(command= self.add_rect)
-        elif i == 1:
-            add_obj_btn.config(command= self.add_line)
-        elif i == 2 :
-            add_obj_btn.config(command=self.add_oval)
-
-    def add_rect(self):
-        co_ords= [int(self.x1_entry.get()),int(self.y1_entry.get()),int(self.x2_entry.get()),int(self.y2_entry.get())]
-        fill_color = self.fill_entry.get()
-        outline_color= self.outline_entry.get()
-        obj = self.canvas.create_rectangle(co_ords,fill=fill_color,outline=outline_color)
-        # add obj reference in list
-        Objects.i += 1
-        self.obJects.append(obj)
-        obj_btn = Button(self.label_frame,text ="obj ",command=lambda :self.update_object(Objects.i-1))
-        obj_btn.grid(row=4,column=0,columnspan=3,ipadx=40)
-        obj_del_btn = Button(self.label_frame, text="\||/", command=lambda: self.delete_object)
-        obj_del_btn.grid(row=4, column=3, columnspan=3)
-
-    def add_line(self):
-        co_ords= [int(self.x1_entry.get()),int(self.y1_entry.get()),int(self.x2_entry.get()),int(self.y2_entry.get())]
-        fill_color = self.fill_entry.get()
-        outline_color= self.outline_entry.get()
-        obj = self.canvas.create_line(co_ords,fill=fill_color,outline=outline_color)
-        # add obj reference in list
-        Objects.i += 1
-        self.obJects.append(obj)
-        obj_btn = Button(self.label_frame,text ="obj ", command=lambda :self.update_object(Objects.i-1))
-        obj_btn.grid(row=4, column=0, columnspan=3)
-        obj_del_btn = Button(self.label_frame, text="\||/", command=lambda: self.delete_object)
-        obj_del_btn.grid(row=4, column=3, columnspan=3)
-
-    def add_oval(self):
-        co_ords= [int(self.x1_entry.get()), int(self.y1_entry.get()), int(self.x2_entry.get()), int(self.y2_entry.get())]
-        fill_color = self.fill_entry.get()
-        outline_color= self.outline_entry.get()
-        obj = self.canvas.create_oval(co_ords, fill=fill_color, outline=outline_color)
-        # add obj reference in list
-        Objects.i += 1
-        self.obJects.append(obj)
-        obj_btn = Button(self.label_frame, text ="obj ", command=lambda :self.update_object(Objects.i-1))
-        obj_btn.grid(row=4, column=0, columnspan=3)
-        obj_del_btn = Button(self.label_frame, text="\||/", command=lambda i: self.delete_object)
-        obj_del_btn.grid(row=4, column=3, columnspan=3)
-
-    def delete_object(self, i):
-        #remove from canvas
-        # item = self.canvas.find_closest(event.x, event.y)[0]
-        # self.Page.itemconfigure(self._drag_data["item"],outline="black")
-        self.canvas.delete(self.obJects[i])
-        #remove from list
-        temp = self.obJects[i]
-        self.obJects.remove(temp)
-
-    def update_object(self, i):
-        # put the data back to form
-        self.x1_entry.config(text="")
-        self.y1_entry.config(text="")
-        self.x2_entry.config(text="")
-        self.y2_entry.config(text="")
-        self.fill_entry.config(text="")
-        self.outline_entry.config(text="")
-        # Pass new co-ords
-        coords = []#int(self.x1_entry.get()),int(self.y1_entry.get()),int(self.x2_entry.get()),int(self.y2_entry.get())]
-        # update to canvas
-        self.canvas.coords(self.obJects[i], coords)
-        self.canvas.itemconfig(self.obJects[i],fill="", outline="")
-    def choose_color(self):
-        col = colorchooser.askcolor()
-        return col[1]
-    def Minimize(self):
-        self.label_frame.grid_forget()
-        self.minMAX_btn.config(text=" + ")
 
 class Tabs:
     def __init__(self, root):
         self.notebook = ttk.Notebook(root)
 
-        self.frame1 = Frame(self.notebook, width=300, height=500, bg="gray")
+        self.frame1 = Frame(self.notebook, width=300, height=500, bg="white")
         frame2 = Frame(self.notebook, width=300, height=520, bg="red")
         frame3 = Frame(self.notebook, width=300, height=520, bg="lime")
         frame4 = Frame(self.notebook, width=300, height=520, bg="yellow")
@@ -736,6 +618,176 @@ class Tabs:
 
         self.notebook.place(x=0, y=0)
 
+
+class FontEditor:
+    def __init__(self, root, x=0, y=0, window=False):
+        self.frame = Frame(root, width=100, height=10, bg="gray")
+        self.frame.place(x=x, y=y)
+        self.B, self.I, self.U = False, False, False
+        self.fonts = list(font.families())
+        ft = StringVar()
+        self.font_selector = ttk.Combobox(self.frame, width=16, textvariable=ft)
+        self.font_selector['values'] = self.fonts
+        self.font_selector.grid(row=0, column=0)
+        self.font_selector.set('Airel')
+
+        self.sizes = [i for i in range(1, 30)]
+        st = StringVar()
+        self.size_selector = ttk.Combobox(self.frame, width=5, textvariable=st)
+        self.size_selector['values'] = self.sizes
+        self.size_selector.set(11)
+
+        self.bold_btn = Button(self.frame, text="B", font=('Airel', 10, font.BOLD), command=self.Bold,
+                               bg="gray", relief=FLAT)
+        self.italics_btn = Button(self.frame, text="I", font=('Airel', 10, font.ITALIC), command=self.Italic,
+                                  bg="gray", relief=FLAT)
+        self.underline_btn = Button(self.frame, text="U", font=('Airel', 10, "underline"), command=self.Underline,
+                                    bg="gray", relief=FLAT)
+
+        # Preview
+        if window:
+            self.size_selector.grid(row=0, column=1)
+            self.bold_btn.grid(row=0, column=2)
+            self.italics_btn.grid(row=0, column=3)
+            self.underline_btn.grid(row=0, column=4)
+            root.wm_title("Font Editor")
+            root.iconbitmap("curriculum-vitae.ico")
+            self.lf = LabelFrame(self.frame, text=" Preview ", font=("Airel", 10, "bold"))
+            self.lf.grid(row=1, column=0, columnspan=5)
+            self.Preview = Label(self.lf, text="AaBbCcDdEeFf", bd=20)
+            self.Preview.pack()  # grid(row=1, column=0, columnspan=5)
+            self.Preview.after(5000, self.prevconfig)
+            root.mainloop()
+        else:
+            self.font_selector.grid(row=0, column=0, columnspan=4)
+            self.size_selector.grid(row=1, column=0)
+            self.bold_btn.grid(row=1, column=1)
+            self.italics_btn.grid(row=1, column=2)
+            self.underline_btn.grid(row=1, column=3)
+
+    def prevconfig(self):
+        s = self.__str__()
+        self.Preview.config(font=s)
+        self.Preview.after(5000, self.prevconfig)
+
+    def Bold(self):
+        if self.B:
+            self.B = False
+            self.bold_btn.config(relief=FLAT)
+        else:
+            self.B = True
+            self.bold_btn.config(relief=SUNKEN)
+
+    def Italic(self):
+        if self.I:
+            self.I = False
+            self.italics_btn.config(relief=FLAT)
+        else:
+            self.I = True
+            self.italics_btn.config(relief=SUNKEN)
+
+    def Underline(self):
+        if self.U:
+            self.U = False
+            self.underline_btn.config(relief=FLAT)
+        else:
+            self.U = True
+            self.underline_btn.config(relief=SUNKEN)
+
+    def get(self):
+        return self.__str__()
+
+    def insert(self, pos=0, config=""):
+        l = config.split(" ")
+        s = ""
+        i = 0
+        while not l[i].isdigit():
+            s += l[i]+" "
+            if "{" in s:
+                s = s[1:]
+            if "}" in s:
+                s = s[:-2]
+            i += 1
+        self.font_selector.set(s)
+        self.size_selector.set(l[i])
+        if "bold" in l:
+            self.B = True
+            self.bold_btn.config(relief=SUNKEN)
+        else:
+            self.B = False
+            self.bold_btn.config(relief=FLAT)
+        if "italic" in l:
+            self.I = True
+            self.italics_btn.config(relief=SUNKEN)
+        else:
+            self.I = False
+            self.italics_btn.config(relief=FLAT)
+        if "underline" in l:
+            self.U = True
+            self.underline_btn.config(relief=SUNKEN)
+        else:
+            self.U = False
+            self.underline_btn.config(relief=FLAT)
+
+    def __str__(self):
+        s = ""
+        f = self.font_selector.get()
+        siz = self.size_selector.get()
+        if self.B:
+            s += "bold "
+        else:
+            s += ""
+        if self.I:
+            s += "italic "
+        else:
+            s += ""
+        if self.U:
+            s += "underline "
+        else:
+            s += ""
+        if s == "":
+            tup = (f, siz)
+        else:
+            l = s[:-1]
+            tup = (f, siz, l)
+        return tup
+
+class Disabled:
+    def __init__(self, root, x=0, y=0, dk=[],windowed=False):
+        self.frame = Frame(root, bg="gray", width=300, height=30+len(dk)*20)
+        self.frame.place(x=x, y=y)
+        self.x, self.y = 0, 0
+
+        self.State = False
+        self.on_off_btn = Button(self.frame, text="OFF", bg="gray", font=('Airel', 10), relief=FLAT, command=self.state)
+        self.on_off_btn.place(x=100, y=0)
+        self.y += 30
+
+        self.List, self.List_text = [], []
+        # root.mainloop()
+
+    def state(self):
+        if self.State:
+            self.State = False
+            self.on_off_btn.config(text="OFF", relief=FLAT)
+            [i.place_forget() for i in self.List]
+            [i.place_forget() for i in self.List_text]
+        else:
+            self.State = True
+            self.on_off_btn.config(text="ON", relief=SUNKEN)
+            y = self.y
+            for i, j in zip(self.List, self.List_text):
+                i.place(x=0, y=y)
+                j.place(x=150, y=y)
+                y += 20
+
+    def add(self, item):
+        item = Label(self.frame, text=item, bg="gray", fg="white", font=("Airal", 10))
+        item_entry = Entry(self.frame, width=20, bd=0)
+        # item.place(x=0, y=self.y)
+        # item_entry.place(x=100, y=self.y)
+        self.List.append(item)
+        self.List_text.append(item_entry)
+
 if __name__ == "__main__":
     t = TemplateEditor()
-
