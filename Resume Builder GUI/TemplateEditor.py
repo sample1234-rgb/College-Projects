@@ -789,5 +789,65 @@ class Disabled:
         self.List.append(item)
         self.List_text.append(item_entry)
 
+
+class ImagePicker:
+    selected = False
+    img = None
+
+    def __init__(self, wn, windowed=True):
+        self.wn = wn
+        wn.title("Image Editor")
+        wn.iconbitmap("curriculum-vitae.ico")
+        frame1 = Frame(wn, bg="lime", width=310, height=410)
+        frame1.place(relx=0.05, rely=0.1)
+        frame2 = Frame(wn, bg="yellow")
+        frame2.place(relx=0.55, rely=0.1)
+        self.canvas1 = Canvas(frame1, width=300, height=400, bg="white")
+        self.canvas1.pack()
+        self.canvas2 = Canvas(frame2, width=200, height=200, bg="white")
+        self.canvas2.pack()
+        self.ds = Designs.Design(self.canvas1)
+        self.ds.scale("all",0, 0, 0.5, 0.5)
+        lf = LabelFrame(wn, text="Options", width=200)
+        lf.place(relx=0.5, rely=0.6)
+        btn_1 = Button(lf, text="Insert", bg="#acdbef", width=35, bd=0, command=self.insert)
+        btn_1.pack(fill=X, expand=1)
+        btn_2 = Button(lf, text="Select Another", bg="#acdbef", width=35, bd=0, command=self.select)
+        btn_2.pack(fill=X, expand=1)
+        btn_3 = Button(lf, text="Cancel", bg="#febdca", width=35, bd=0, command=self.cancel)
+        btn_3.pack(fill=X, expand=1)
+
+        wn.mainloop()
+
+    def insert(self):
+        if self.selected:
+            coord = self.canvas2.coords(self.rect)
+            img = ImageTk.PhotoImage(Image.open(self.name).resize((int(coord[2]-coord[0]), int(coord[3]-coord[1])), Image.ANTIALIAS))
+            self.ds.canvas.create_image(10, 10, image=img)
+        else:
+            self.select()
+
+    def select(self):
+        if self.selected:
+            msg_bx = messagebox.askyesno("Choose Another", message="Are you sure to change image ?")
+            if msg_bx:
+                file = filedialog.askopenfile(initialdir="C:/Users/ADMIN/Desktop", title="Open", filetypes=(("PNG", "*.png"),))
+                self.name = file.name
+                self.img = ImageTk.PhotoImage(Image.open(self.name).resize((200, 200), Image.ANTIALIAS))
+                images = self.canvas2.create_image(0, 0, anchor=NW, image=self.img)
+                self.selected = True
+        else:
+            file = filedialog.askopenfile(initialdir="C:/Users/ADMIN/Desktop", title="Open", filetypes=(("PNG", "*.png"),))
+            self.name = file.name
+            self.img = ImageTk.PhotoImage(Image.open(self.name).resize((200, 200), Image.ANTIALIAS))
+            images = self.canvas2.create_image(0, 0, anchor=NW, image=self.img)
+            self.selected = True
+        self.rect = self.canvas2.create_rectangle(2, 2, 200, 200, fill="#f4f4f4", outline="black", stipple="gray25")
+   
+    def cancel(self):
+        msg = messagebox.askquestion("Exiting", "Are you sure to exit ?")
+        if msg:
+            self.wn.destroy()
+   
 if __name__ == "__main__":
     t = TemplateEditor()
