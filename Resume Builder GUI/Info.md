@@ -13,3 +13,8 @@ Standard Mode
 
 ![image](https://user-images.githubusercontent.com/61881543/113476431-206f3c00-9499-11eb-8313-948c1ee25dac.png)
 Dark Mode for Night Workers
+
+### Image Picker
+To add perfect image for the perfect Portfolio.
+![image](https://user-images.githubusercontent.com/61881543/114303369-6fe1e780-9aeb-11eb-848a-b4fc35f3e251.png)<br/>
+(**In Development**)
