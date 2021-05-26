@@ -8,7 +8,7 @@ from fpdf import FPDF
 import Designs
 
 class TemplateEditor:
-    def __init__(self):
+    def __init__(self,data={}):
         # self.root =frame
         self.root = Tk()
         self.root.title("Template Editor")
