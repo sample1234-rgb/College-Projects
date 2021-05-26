@@ -1,6 +1,6 @@
 # import TextEditor
 class Design():
-    def __init__(self,canvas):
+    def __init__(self,canvas,data={}):
         self.canvas= canvas
         self.designs = ["self.design_1()","self.design_2()","self.design_3()","self.design_4()","self.design_5()","self.design_6()"]
         self.nxtptr = 0
