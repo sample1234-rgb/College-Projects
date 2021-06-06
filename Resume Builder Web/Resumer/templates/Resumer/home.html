@@ -1,0 +1,18 @@
+{% extends 'Resumer/Bootstrap.html' %}
+
+{% block content %}
+<center>
+    <h1>Welcome Home 😀</h1>
+    <div class="Choices">
+        <center class="Choices">
+        <div class="choice">
+            <p><a href="{% url 'inform' '1' %}">Form</a></p>
+        </div>
+        <div class="vl"></div>
+        <div class="choice">
+            <p><a href="{% url 'resume' %}">Template</a></p>
+        </div>
+        </center>
+    </div>
+</center>
+{% endblock %}

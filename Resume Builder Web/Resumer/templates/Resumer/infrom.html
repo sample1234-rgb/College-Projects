@@ -1,0 +1,47 @@
+{% extends 'Resumer/Bootstrap.html' %}
+
+{% block content %}
+<div class="card" style="display:inline;background-color:#f4f4f4;border:0px;">
+    <div class="btn btn-outline-info"><a href="{% url 'inform' 1 %}">Information</a></div>
+    <div class="btn btn-outline-info"><a href="{% url 'inform' 2 %}">Education</a></div>
+    <div class="btn btn-outline-info"><a href="{% url 'inform' 3 %}">Experience</a></div>
+    <div class="btn btn-outline-info"><a href="{% url 'inform' 4 %}">Skills</a></div>
+    <div class="btn btn-outline-info"><a href="{% url 'inform' 5 %}">Additional</a></div>
+</div>
+<center>
+    {% if submitted %}
+    <div class="alert alert-info" role="alert">Form submitted successfully.</div>
+    {% else %}
+    <!--                <div class="alert alert-danger" role="alert">Error Occurred.</div>-->
+        <div class="card border-secondary mb-3" style="max-width: max-content;">
+            <div class="card-header">{{ name }}</div>
+            <div class="card-body text-secondary">
+                <p class="card-text">
+                    <form action="{% url 'inform' 1 %}" method="POST">
+                        {% csrf_token %}
+                        <br>
+                        {{ form.as_p }}
+                    </form>
+                </p>
+            </div>
+            <div class="card-footer">
+                {% if add_feature %}
+                    <input type="submit" onclick="window.location='{% url 'inform' 2 %}' ; return false;" value="Add" class="btn btn-outline-secondary">
+                {% endif %}
+                <input type="submit" onclick="window.location='{% url 'home' %}' ; return false;" value="Cancel" class="btn btn-outline-danger">
+                {% if next == "2" %}
+                    <input type="submit" value="Next" class="btn btn-outline-primary" onclick="window.location='{% url 'inform' 2 %}' ; return false;">
+                {% elif next == "3" %}
+                    <input type="submit" value="Next" class="btn btn-outline-primary" onclick="window.location='{% url 'inform' 3 %}' ; return false;">
+                {% elif next == "4" %}
+                    <input type="submit" value="Next" class="btn btn-outline-primary" onclick="window.location='{% url 'inform' 4 %}' ; return false;">
+                {% elif next == "5" %}
+                    <input type="submit" value="Next" class="btn btn-outline-primary" onclick="window.location='{% url 'inform' 5 %}' ; return false;">
+                {% elif next == "6" %}
+                    <input type="submit" value="Next" class="btn btn-outline-primary" onclick="window.location='{% url 'inform' 6 %}' ; return false;">
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</center>
+{% endblock %}

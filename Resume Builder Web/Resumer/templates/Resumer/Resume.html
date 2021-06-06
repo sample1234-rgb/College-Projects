@@ -1,0 +1,99 @@
+{% extends 'Resumer/Bootstrap.html' %}
+
+{% block content %}
+<!--<div style="display:flex;padding:10px;">-->
+<!--<div class="btn btn-outline-secondary" style="margin:5px;">-->
+<!--    <a href="#"><&#45;&#45; Previous</a>-->
+<!--</div>-->
+<center>
+    <div class="page">
+        <div class="comp comp-container"  style="height:min-content;width:1000px;border:2px solid black;">
+            {% if image is not None %}
+                <div class="comp">
+                        {{ image|safe }}
+                </div>
+            {% endif %}
+
+            <div class="comp" style="display:inline;border:2px solid black;">
+                <p align="center" id="Name"><strong>{{ form.name }}</strong></p>
+                <hr/>
+                <p align="left" id="Desc">{{ form.desc }}</p>
+            </div>
+
+            <div class="comp" style="display:inline;border:2px solid black;">
+                <p align="left"><strong>@</strong> = {{ form.email }}</p>
+                <p align="left"><strong>ln</strong> = {{ form.linkedin }}</p>
+                <p class="no" align="left">(+91) {{ form.contacts }}</p>
+            </div>
+
+            <div class="comp" style="display:inline;border:2px solid black;">
+                <p>Play</p>
+            </div>
+        </div>
+
+        <div class="comp comp-container" style="height:min-content;width:1000px;border:2px solid black;">
+            <div class="comp" style="display:inline;border:2px solid #ffd485;border-radius:0px;">
+<!--                border-radius:20px;background-color:#ffd485;-->
+                <div class="comp-header" style="border:2px solid #ffd485;border-radius:0px;background-color:white;">
+                    <p class="comp-header-header" style="border-radius:0px;background-color:white;">{{ form.body_header.1 }}</p>
+                    <div class="comp-header-ball" style="display:none;"></div>
+                </div>
+                <p style="padding:2px;" align="left">
+                    <ul>
+                        {% for i in form.body.education %}
+                            <li align="left">{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            </div>
+
+            <div class="comp" style="display:inline;border:2px solid #ffd485;border-radius:0px;">
+                <div class="comp-header" style="border:2px solid #ffd485;border-radius:0px;background-color:white;">
+                    <div class="comp-header-ball" style="display:none;"></div>
+                    <p class="comp-header-header" style="border-radius:0px;background-color:white;">{{ form.body_header.2 }}</p>
+                </div>
+                <p style="padding:2px;" align="left">
+                    <ul>
+                        {% for i in form.body.ach %}
+                            <li align="left">{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            </div>
+        </div>
+        <div class="comp comp-container" style="height:min-content;width:1000px;border:2px solid black;">
+            <div class="comp" style="display:inline;border-radius:0px;border:2px solid #ffd485;">
+                <div class="comp-header" style="border:2px solid #ffd485;border-radius:0px;background-color:white;">
+                    <p class="comp-header-header" style="border-radius:0px;background-color:white;">{{ form.body_header.3 }}</p>
+                    <div class="comp-header-ball" style="display:none;"></div>
+                </div>
+                <p style="padding:2px;" align="left">
+                    <ul>
+                        {% for i in form.body.experience %}
+                        <li align="left">{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            </div>
+
+            <div class="comp" style="display:inline;border-radius:0px;border:2px solid #ffd485;">
+                <div class="comp-header" style="border:2px solid #ffd485;border-radius:0px;background-color:white;">
+                    <div class="comp-header-ball" style="display:none;"></div>
+                    <p class="comp-header-header" style="border-radius:0px;background-color:white;">{{ form.body_header.4 }}</p>
+                </div>
+                <p style="padding:2px;" align="left">
+                    <ul>
+                        {% for i in form.body.skill %}
+                        <li align="left">{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+</center>
+<!--<div class="btn btn-outline-primary" style="margin:5px;">-->
+<!--    <a href="#">Next &ndash;&gt;</a>-->
+<!--</div>-->
+<!--</div>-->
+{% endblock %}
